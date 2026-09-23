@@ -17,7 +17,7 @@
                     <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     Sistema de Consulta Masiva
                 </h1>
-                <p class="text-slate-400 text-sm mt-1">Búsqueda jerárquica optimizada en múltiples libros de Google Sheets</p>
+                <p class="text-slate-400 text-sm mt-1">Búsqueda jerárquica y segmentada en múltiples libros de Google Sheets</p>
             </div>
         </div>
     </header>
@@ -30,34 +30,45 @@
             <h2 class="text-lg font-semibold mb-5 text-indigo-300 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Filtros de Búsqueda Jerárquica
             </h2>
-            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 
                 <!-- Criterio Principal Combinado (CURP o ID con Selector) -->
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Criterio Principal (3er Nivel)</label>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Criterio Principal</label>
                     <div class="flex rounded-xl shadow-sm border border-slate-600 bg-slate-900 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
-                        <select id="searchType" class="bg-slate-800 text-slate-200 px-3 py-2.5 border-r border-slate-600 text-sm font-medium focus:outline-none">
-                            <option value="curp">CURP (Col. B)</option>
-                            <option value="id">ID (Col. C)</option>
+                        <select id="searchType" class="bg-slate-800 text-slate-200 px-2 py-2.5 border-r border-slate-600 text-xs font-medium focus:outline-none">
+                            <option value="curp">CURP</option>
+                            <option value="id">ID</option>
                         </select>
-                        <input type="text" id="searchValue" placeholder="Escribe el valor..." class="w-full px-4 py-2.5 bg-transparent text-white placeholder-slate-500 focus:outline-none uppercase text-sm">
+                        <input type="text" id="searchValue" placeholder="Valor..." class="w-full px-3 py-2.5 bg-transparent text-white placeholder-slate-500 focus:outline-none uppercase text-sm">
                     </div>
                 </div>
 
                 <!-- Estado (Columna A - 1er Nivel de Acotamiento) -->
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Estado (Col. A - 1er Nivel)</label>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Estado (Col. A)</label>
                     <input type="text" id="estado" placeholder="Ej. Hidalgo" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
                 </div>
 
                 <!-- CCT (Columna F - 2do Nivel de Acotamiento) -->
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">CCT (Col. F - 2do Nivel)</label>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">CCT (Col. F)</label>
                     <input type="text" id="cct" placeholder="Ej. 13DPR..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none uppercase text-sm">
                 </div>
 
+                <!-- Selector de Origen / Libro (Nuevo) -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Libro de Búsqueda</label>
+                    <select id="searchScope" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="TODOS">Todos los libros</option>
+                        <option value="JEF">JEF (Libro Principal)</option>
+                        <option value="EMS">EMS (Primer ID)</option>
+                        <option value="BASICA">BASICA (IDs Siguientes)</option>
+                    </select>
+                </div>
+
                 <!-- Botón de Envío -->
-                <div class="md:col-span-3 flex justify-end pt-2">
+                <div class="lg:col-span-4 flex justify-end pt-2">
                     <button type="submit" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium px-8 py-3 rounded-xl shadow-lg shadow-indigo-600/30 transition-all duration-200 flex items-center gap-2 text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <span>Ejecutar Búsqueda Masiva</span>
@@ -69,7 +80,7 @@
         <!-- Spinner de Carga -->
         <div id="loading" class="hidden flex flex-col items-center justify-center py-16">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mb-4"></div>
-            <p class="text-slate-400 text-sm tracking-wide">Consultando millones de registros bajo jerarquía en servidores...</p>
+            <p class="text-slate-400 text-sm tracking-wide">Consultando registros bajo jerarquía seleccionada...</p>
         </div>
 
         <!-- Visualizador de Resultados -->
@@ -82,7 +93,7 @@
             <div class="overflow-x-auto max-h-[650px] border border-slate-700 rounded-xl">
                 <table id="resultsTable" class="w-full text-left border-collapse">
                     <thead id="tableHeader" class="bg-slate-900/90 sticky top-0 text-xs text-slate-400 uppercase font-semibold tracking-wider backdrop-blur-sm">
-                        <!-- Generado dinámicamente con cabeceras de la tabla original -->
+                        <!-- Generado dinámicamente -->
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-700/60 text-sm text-slate-300">
                         <!-- Generado dinámicamente -->
@@ -95,7 +106,7 @@
 
     <!-- Script de Conexión -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxpeBu2NWSFsshQYrDHg_akI3reaVaYTZ--sftyhX5dSVYHcM4bz4lOQb2-WPt-EfePrA/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxemLXGOQGVR9qT58VwEvjoKVsIK7FdoVNakA0Y_0JupIH8QuTGKwFYrDSXZ260Fhj6mQ/exec";
 
         document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -104,6 +115,7 @@
             const searchValue = document.getElementById('searchValue').value.trim();
             const estado = document.getElementById('estado').value.trim();
             const cct = document.getElementById('cct').value.trim();
+            const searchScope = document.getElementById('searchScope').value;
 
             if (!searchValue && !estado && !cct) {
                 alert("Por favor, introduce al menos un criterio de búsqueda.");
@@ -120,7 +132,7 @@
             resultsSection.classList.add('hidden');
 
             try {
-                const response = await fetch(`${WEB_APP_URL}?type=${searchType}&value=${encodeURIComponent(searchValue)}&estado=${encodeURIComponent(estado)}&cct=${encodeURIComponent(cct)}`);
+                const response = await fetch(`${WEB_APP_URL}?type=${searchType}&value=${encodeURIComponent(searchValue)}&estado=${encodeURIComponent(estado)}&cct=${encodeURIComponent(cct)}&scope=${searchScope}`);
                 const data = await response.json();
 
                 loading.classList.add('hidden');
@@ -129,7 +141,6 @@
                 if (data.status === "success" && data.results.length > 0) {
                     resultCount.textContent = `${data.results.length} resultado(s)`;
                     
-                    // Tomamos la cabecera dinámica de la primera coincidencia
                     const firstResult = data.results[0];
                     let headerHtml = '<tr><th class="p-4 border-b border-slate-700 text-indigo-400 font-bold">Origen</th><th class="p-4 border-b border-slate-700 text-indigo-400 font-bold">Hoja</th>';
                     
@@ -139,12 +150,10 @@
                     headerHtml += '</tr>';
                     tableHeader.innerHTML = headerHtml;
 
-                    // Construir filas dinámicas
                     let bodyHtml = '';
                     data.results.forEach(res => {
                         bodyHtml += '<tr class="hover:bg-slate-700/40 transition-colors">';
                         
-                        // Diseño de Badges según el origen requerido
                         let badgeClass = "bg-slate-700 text-slate-300";
                         if (res.source === "JEF") badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
                         else if (res.source === "EMS") badgeClass = "bg-blue-500/20 text-blue-300 border border-blue-500/30";
@@ -163,7 +172,7 @@
                 } else {
                     resultCount.textContent = "0 resultados";
                     tableHeader.innerHTML = '';
-                    tableBody.innerHTML = '<tr><td colspan="15" class="p-8 text-center text-slate-500">No se encontraron registros que coincidan con la jerarquía de filtros especificada.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="15" class="p-8 text-center text-slate-500">No se encontraron registros que coincidan con los criterios especificados.</td></tr>';
                 }
 
             } catch (error) {
