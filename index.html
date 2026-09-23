@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta Estados</title>
+    <title>Sistema de Consulta Masiva Avanzada</title>
     <!-- Tailwind CSS para diseño moderno -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
-    <!-- Header Moderno -->
-    <header class="bg-gradient-to-r from-indigo-900 via-slate-900 to-violet-900 border-b border-slate-800 py-6 px-8 shadow-xl">
+    <!-- Header Moderno con tu color #1e5b4f -->
+    <header class="bg-gradient-to-r from-[#1e5b4f] via-slate-900 to-[#123831] border-b border-slate-800 py-6 px-8 shadow-xl">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                    <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    Sistema de Consulta
+                    <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Sistema de Consulta Masiva
                 </h1>
-                <p class="text-slate-400 text-sm mt-1">Búsqueda...</p>
+                <p class="text-slate-400 text-sm mt-1">Búsqueda jerárquica y segmentada en múltiples libros de Google Sheets</p>
             </div>
         </div>
     </header>
@@ -27,15 +27,15 @@
         
         <!-- Formulario de Búsqueda -->
         <section class="bg-slate-800 rounded-2xl shadow-xl border border-slate-700/60 p-6 mb-8 backdrop-blur-md">
-            <h2 class="text-lg font-semibold mb-5 text-indigo-300 flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Filtros de Búsqueda
+            <h2 class="text-lg font-semibold mb-5 text-emerald-400 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#1e5b4f]"></span> Filtros de Búsqueda Jerárquica
             </h2>
             <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 
                 <!-- Criterio Principal Combinado (CURP o ID con Selector) -->
                 <div class="space-y-1.5">
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Criterio Principal</label>
-                    <div class="flex rounded-xl shadow-sm border border-slate-600 bg-slate-900 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
+                    <div class="flex rounded-xl shadow-sm border border-slate-600 bg-slate-900 overflow-hidden focus-within:ring-2 focus-within:ring-[#1e5b4f]">
                         <select id="searchType" class="bg-slate-800 text-slate-200 px-2 py-2.5 border-r border-slate-600 text-xs font-medium focus:outline-none">
                             <option value="curp">CURP</option>
                             <option value="id">ID</option>
@@ -46,32 +46,32 @@
 
                 <!-- Estado (Columna A - 1er Nivel de Acotamiento) -->
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Estado</label>
-                    <input type="text" id="estado" placeholder="Ej. Hidalgo" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Estado (Col. A)</label>
+                    <input type="text" id="estado" placeholder="Ej. Hidalgo" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none text-sm">
                 </div>
 
                 <!-- CCT (Columna F - 2do Nivel de Acotamiento) -->
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">CCT</label>
-                    <input type="text" id="cct" placeholder="Ej. 13DPR..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none uppercase text-sm">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">CCT (Col. F)</label>
+                    <input type="text" id="cct" placeholder="Ej. 13DPR..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none uppercase text-sm">
                 </div>
 
-                <!-- Selector de Origen / Libro (Nuevo) -->
+                <!-- Selector de Origen / Libro -->
                 <div class="space-y-1.5">
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Libro de Búsqueda</label>
-                    <select id="searchScope" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        <option value="TODOS">Todos los valores</option>
-                        <option value="JEF">JEF</option>
-                        <option value="EMS">EMS</option>
-                        <option value="BASICA">BASICA</option>
+                    <select id="searchScope" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white text-sm focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none">
+                        <option value="TODOS">Todos los libros</option>
+                        <option value="JEF">JEF (Libro Principal)</option>
+                        <option value="EMS">EMS (Primer ID)</option>
+                        <option value="BASICA">BASICA (IDs Siguientes)</option>
                     </select>
                 </div>
 
-                <!-- Botón de Envío -->
+                <!-- Botón de Envío con tu color #1e5b4f -->
                 <div class="lg:col-span-4 flex justify-end pt-2">
-                    <button type="submit" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium px-8 py-3 rounded-xl shadow-lg shadow-indigo-600/30 transition-all duration-200 flex items-center gap-2 text-sm">
+                    <button type="submit" class="bg-[#1e5b4f] hover:bg-[#16483e] text-white font-medium px-8 py-3 rounded-xl shadow-lg shadow-[#1e5b4f]/30 transition-all duration-200 flex items-center gap-2 text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <span>Ejecutar Búsqueda</span>
+                        <span>Ejecutar Búsqueda Masiva</span>
                     </button>
                 </div>
             </form>
@@ -79,15 +79,15 @@
 
         <!-- Spinner de Carga -->
         <div id="loading" class="hidden flex flex-col items-center justify-center py-16">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mb-4"></div>
-            <p class="text-slate-400 text-sm tracking-wide">Consultando registros...</p>
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400 mb-4"></div>
+            <p class="text-slate-400 text-sm tracking-wide">Consultando registros bajo jerarquía seleccionada...</p>
         </div>
 
         <!-- Visualizador de Resultados -->
         <section id="resultsSection" class="bg-slate-800 rounded-2xl shadow-xl border border-slate-700/60 p-6 hidden">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
                 <h2 class="text-lg font-semibold text-slate-200">Resultados Encontrados</h2>
-                <span id="resultCount" class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-3 py-1 rounded-full">0 resultados</span>
+                <span id="resultCount" class="bg-[#1e5b4f]/30 text-emerald-300 border border-[#1e5b4f]/50 text-xs font-semibold px-3 py-1 rounded-full">0 resultados</span>
             </div>
             
             <div class="overflow-x-auto max-h-[650px] border border-slate-700 rounded-xl">
@@ -106,7 +106,7 @@
 
     <!-- Script de Conexión -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxemLXGOQGVR9qT58VwEvjoKVsIK7FdoVNakA0Y_0JupIH8QuTGKwFYrDSXZ260Fhj6mQ/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/TU_SCRIPT_ID/exec";
 
         document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -142,7 +142,7 @@
                     resultCount.textContent = `${data.results.length} resultado(s)`;
                     
                     const firstResult = data.results[0];
-                    let headerHtml = '<tr><th class="p-4 border-b border-slate-700 text-indigo-400 font-bold">Origen</th><th class="p-4 border-b border-slate-700 text-indigo-400 font-bold">Hoja</th>';
+                    let headerHtml = '<tr><th class="p-4 border-b border-slate-700 text-emerald-400 font-bold">Origen</th><th class="p-4 border-b border-slate-700 text-emerald-400 font-bold">Hoja</th>';
                     
                     firstResult.headers.forEach(h => {
                         headerHtml += `<th class="p-4 border-b border-slate-700">${h || 'Columna'}</th>`;
