@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -56,14 +56,15 @@
                     <input type="text" id="cct" placeholder="Ej. 13DPR..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none uppercase text-sm">
                 </div>
 
-                <!-- Selector de Origen / Libro -->
+                <!-- Selector de Origen / Libro (ACTUALIZADO CON GB) -->
                 <div class="space-y-1.5">
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Libro de Búsqueda</label>
                     <select id="searchScope" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white text-sm focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none">
                         <option value="TODOS">Todos los libros</option>
                         <option value="JEF">BASICA</option>
-                        <option value="EMS">EMS</option>
-                        <option value="BASICA">JEF</option>
+                        <option value="GB">EMS</option>
+                        <option value="EMS">JEF</option>
+                        <option value="BASICA">GB</option>
                     </select>
                 </div>
 
@@ -106,7 +107,8 @@
 
     <!-- Script de Conexión -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxemLXGOQGVR9qT58VwEvjoKVsIK7FdoVNakA0Y_0JupIH8QuTGKwFYrDSXZ260Fhj6mQ/exec";
+        // ¡RECUERDA CAMBIAR ESTA URL POR LA DE TU NUEVO DEPLOY DEL SCRIPT DE GOOGLE!
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznoHekrPPi9wEZVNiDI8A_MfGFaIKOjQ-QcZp98xPnUK1Kq-emISjhXE6jaHV1nawcOA/exec";
 
         document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -155,9 +157,17 @@
                         bodyHtml += '<tr class="hover:bg-slate-700/40 transition-colors">';
                         
                         let badgeClass = "bg-slate-700 text-slate-300";
-                        if (res.source === "JEF") badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                        else if (res.source === "EMS") badgeClass = "bg-blue-500/20 text-blue-300 border border-blue-500/30";
-                        else if (res.source === "BASICA") badgeClass = "bg-purple-500/20 text-purple-300 border border-purple-500/30";
+                        
+                        // Nuevos colores para las etiquetas dependiendo del origen
+                        if (res.source === "JEF") {
+                            badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                        } else if (res.source === "GB") {
+                            badgeClass = "bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                        } else if (res.source === "EMS") {
+                            badgeClass = "bg-blue-500/20 text-blue-300 border border-blue-500/30";
+                        } else if (res.source === "BASICA") {
+                            badgeClass = "bg-purple-500/20 text-purple-300 border border-purple-500/30";
+                        }
 
                         bodyHtml += `<td class="p-4 border-b border-slate-700/65"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${badgeClass}">${res.source}</span></td>`;
                         bodyHtml += `<td class="p-4 border-b border-slate-700/65 text-slate-400 text-xs">${res.sheetName}</td>`;
