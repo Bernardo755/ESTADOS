@@ -1,272 +1,115 @@
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Consulta Estados</title>
-
     <!-- Tailwind CSS para diseño moderno -->
-
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <style>
-
-        /* Oculta la flecha por defecto del navegador en las etiquetas summary */
-
-        summary::-webkit-details-marker {
-
-            display: none;
-
-        }
-
-    </style>
-
 </head>
-
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
-
-
-    <!-- Header Moderno con color #1e5b4f -->
-
+    <!-- Header Moderno -->
     <header class="bg-gradient-to-r from-[#1e5b4f] via-slate-900 to-[#123831] border-b border-slate-800 py-6 px-8 shadow-xl">
-
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-
             <div>
-
                 <h1 class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
-
                     <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-
                     Sistema de Consulta
-
                 </h1>
-
                 <p class="text-slate-400 text-sm mt-1">Búsqueda de registros</p>
-
             </div>
-
         </div>
-
     </header>
 
-
-
     <!-- Main Container -->
-
     <main class="flex-grow container mx-auto px-4 py-8 max-w-7xl">
-
         
-
         <!-- Formulario de Búsqueda -->
-
         <section class="bg-slate-800 rounded-2xl shadow-xl border border-slate-700/60 p-6 mb-8 backdrop-blur-md">
-
             <h2 class="text-lg font-semibold mb-5 text-emerald-400 flex items-center gap-2">
-
                 <span class="w-2.5 h-2.5 rounded-full bg-[#1e5b4f]"></span> Filtros de Búsqueda
-
             </h2>
-
             
-
-            <!-- Agregamos "items-start" para que los acordeones no estiren la fila completa al abrirse -->
-
-            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
-
+            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
                 
-
-                <!-- 1. Criterio Principal (Acordeón - Abierto por defecto) -->
-
-                <details class="group bg-slate-900/50 border border-slate-600 rounded-xl overflow-hidden shadow-sm" open>
-
-                    <summary class="px-4 py-3.5 text-xs font-semibold text-slate-300 uppercase tracking-wider flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors list-none focus:outline-none focus:ring-2 focus:ring-[#1e5b4f]">
-
-                        Criterio Principal
-
-                        <svg class="w-4 h-4 text-emerald-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-
-                    </summary>
-
-                    <div class="px-4 pb-4 pt-2 border-t border-slate-700">
-
-                        <div class="flex rounded-xl shadow-sm border border-slate-600 bg-slate-900 overflow-hidden focus-within:ring-2 focus-within:ring-[#1e5b4f]">
-
-                            <select id="searchType" class="bg-slate-800 text-slate-200 px-2 py-2.5 border-r border-slate-600 text-xs font-medium focus:outline-none">
-
-                                <option value="curp">CURP</option>
-
-                                <option value="id">ID</option>
-
-                            </select>
-
-                            <input type="text" id="searchValue" placeholder="Valor..." class="w-full px-3 py-2.5 bg-transparent text-white placeholder-slate-500 focus:outline-none uppercase text-sm">
-
-                        </div>
-
-                    </div>
-
-                </details>
-
-
-
-                <!-- 2. Estado (Acordeón - Cerrado por defecto) -->
-
-                <details class="group bg-slate-900/50 border border-slate-600 rounded-xl overflow-hidden shadow-sm">
-
-                    <summary class="px-4 py-3.5 text-xs font-semibold text-slate-300 uppercase tracking-wider flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors list-none focus:outline-none focus:ring-2 focus:ring-[#1e5b4f]">
-
-                        Filtro: Estado
-
-                        <svg class="w-4 h-4 text-emerald-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-
-                    </summary>
-
-                    <div class="px-4 pb-4 pt-2 border-t border-slate-700">
-
-                        <input type="text" id="estado" placeholder="Ej. Hidalgo" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none text-sm">
-
-                    </div>
-
-                </details>
-
-
-
-                <!-- 3. CCT (Acordeón - Cerrado por defecto) -->
-
-                <details class="group bg-slate-900/50 border border-slate-600 rounded-xl overflow-hidden shadow-sm">
-
-                    <summary class="px-4 py-3.5 text-xs font-semibold text-slate-300 uppercase tracking-wider flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors list-none focus:outline-none focus:ring-2 focus:ring-[#1e5b4f]">
-
-                        Filtro: CCT
-
-                        <svg class="w-4 h-4 text-emerald-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-
-                    </summary>
-
-                    <div class="px-4 pb-4 pt-2 border-t border-slate-700">
-
-                        <input type="text" id="cct" placeholder="Ej. 13DPR..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none uppercase text-sm">
-
-                    </div>
-
-                </details>
-
-
-
-                <!-- 4. Libro de Búsqueda (Acordeón - Cerrado por defecto) -->
-
-                <details class="group bg-slate-900/50 border border-slate-600 rounded-xl overflow-hidden shadow-sm">
-
-                    <summary class="px-4 py-3.5 text-xs font-semibold text-slate-300 uppercase tracking-wider flex justify-between items-center cursor-pointer hover:bg-slate-800 transition-colors list-none focus:outline-none focus:ring-2 focus:ring-[#1e5b4f]">
-
-                        Libro de Búsqueda
-
-                        <svg class="w-4 h-4 text-emerald-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-
-                    </summary>
-
-                    <div class="px-4 pb-4 pt-2 border-t border-slate-700">
-
-                        <select id="searchScope" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white text-sm focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none">
-
-                            <option value="TODOS">Todos los libros</option>
-
-                            <option value="JEF">JEF (Libro del Script)</option>
-
-                            <option value="EMS">EMS (1er ID)</option>
-
-                            <option value="GB">GB (2do ID)</option>
-
-                            <option value="BASICA">BASICA (3er ID en adelante)</option>
-
+                <!-- 1. Criterio Principal -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Criterio Principal *</label>
+                    <div class="flex rounded-xl shadow-sm border border-slate-600 bg-slate-900 overflow-hidden focus-within:ring-2 focus-within:ring-[#1e5b4f]">
+                        <select id="searchType" class="bg-slate-800 text-slate-200 px-3 py-2.5 border-r border-slate-600 text-xs font-medium focus:outline-none cursor-pointer">
+                            <option value="curp">CURP</option>
+                            <option value="id">ID</option>
                         </select>
-
+                        <input type="text" id="searchValue" placeholder="Valor (Obligatorio)..." class="w-full px-3 py-2.5 bg-transparent text-white placeholder-slate-500 focus:outline-none uppercase text-sm">
                     </div>
-
-                </details>
-
-
-
-                <!-- Botón de Envío -->
-
-                <div class="lg:col-span-4 flex justify-end pt-4 mt-2 border-t border-slate-700/60">
-
-                    <button type="submit" class="bg-[#1e5b4f] hover:bg-[#16483e] text-white font-medium px-8 py-3 rounded-xl shadow-lg shadow-[#1e5b4f]/30 transition-all duration-200 flex items-center gap-2 text-sm">
-
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-
-                        <span>Ejecutar Búsqueda</span>
-
-                    </button>
-
                 </div>
 
+                <!-- 2. Estado -->
+                <div class="flex flex-col gap-2">
+                    <label for="estado" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Filtro: Estado (Opcional)</label>
+                    <input type="text" id="estado" placeholder="Ej. Hidalgo" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none text-sm">
+                </div>
+
+                <!-- 3. CCT -->
+                <div class="flex flex-col gap-2">
+                    <label for="cct" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Filtro: CCT (Opcional)</label>
+                    <input type="text" id="cct" placeholder="Ej. 13DPR..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none uppercase text-sm">
+                </div>
+
+                <!-- 4. Libro de Búsqueda -->
+                <div class="flex flex-col gap-2">
+                    <label for="searchScope" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">NIVEL</label>
+                    <select id="searchScope" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white text-sm focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none cursor-pointer">
+                        <option value="TODOS">Todos los niveles</option>
+                        <option value="BASICA">BASICA</option>
+                        <option value="EMS">EMS</option>
+                        <option value="JEF">JEF</option>
+                        <option value="GB">GB</option>
+                    </select>
+                </div>
+
+                <!-- Botón de Envío (Ocupa toda la fila en pantallas grandes) -->
+                <div class="lg:col-span-4 flex justify-end pt-2 mt-2 border-t border-slate-700/60">
+                    <button type="submit" class="bg-[#1e5b4f] hover:bg-[#16483e] text-white font-medium px-8 py-3 rounded-xl shadow-lg shadow-[#1e5b4f]/30 transition-all duration-200 flex items-center gap-2 text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Ejecutar Búsqueda</span>
+                    </button>
+                </div>
             </form>
-
         </section>
-
-
 
         <!-- Spinner de Carga -->
-
         <div id="loading" class="hidden flex flex-col items-center justify-center py-16">
-
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400 mb-4"></div>
-
             <p class="text-slate-400 text-sm tracking-wide">Consultando registros...</p>
-
         </div>
 
-
-
         <!-- Visualizador de Resultados -->
-
         <section id="resultsSection" class="bg-slate-800 rounded-2xl shadow-xl border border-slate-700/60 p-6 hidden">
-
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
-
                 <h2 class="text-lg font-semibold text-slate-200">Resultados Encontrados</h2>
-
                 <span id="resultCount" class="bg-[#1e5b4f]/30 text-emerald-300 border border-[#1e5b4f]/50 text-xs font-semibold px-3 py-1 rounded-full">0 resultados</span>
-
             </div>
-
             
-
             <div class="overflow-x-auto max-h-[650px] border border-slate-700 rounded-xl">
-
                 <table id="resultsTable" class="w-full text-left border-collapse">
-
                     <thead id="tableHeader" class="bg-slate-900/90 sticky top-0 text-xs text-slate-400 uppercase font-semibold tracking-wider backdrop-blur-sm">
-
                         <!-- Generado dinámicamente -->
-
                     </thead>
-
                     <tbody id="tableBody" class="divide-y divide-slate-700/60 text-sm text-slate-300">
-
                         <!-- Generado dinámicamente -->
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </section>
+
     </main>
 
-
-<!-- Script de Conexión -->
+    <!-- Script de Conexión -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzGkz-dolVRFUg5eJaJPkjP0Ltm3LSt6Kx8jK4Bs5L06j4_y7t6l4-gXSUTOEJ0YmnP0A/exec"; // Asegúrate de pegar tu URL real aquí
+        // 👉 AQUÍ VA EL ENLACE DE TU SCRIPT DE GOOGLE
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzGkz-dolVRFUg5eJaJPkjP0Ltm3LSt6Kx8jK4Bs5L06j4_y7t6l4-gXSUTOEJ0YmnP0A/exec"; 
 
         document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -278,10 +121,10 @@
             const searchScope = document.getElementById('searchScope').value;
 
             // ==========================================
-            // NUEVAS VALIDACIONES ESTRICTAS
+            // VALIDACIONES ESTRICTAS
             // ==========================================
 
-            // 1. Obligatorio tener un valor en CURP o ID (Ignora si hay Estado o CCT)
+            // 1. Obligatorio tener un valor en CURP o ID
             if (!searchValue) {
                 alert("⚠️ Es obligatorio ingresar una CURP o un ID para realizar la búsqueda.");
                 return;
@@ -289,24 +132,22 @@
 
             // 2. Validación estricta para CURP (Exactamente 18 caracteres, letras y números)
             if (searchType === "curp") {
-                // Expresión regular: 18 caracteres que sean letras (A-Z) o números (0-9)
                 const curpRegex = /^[A-Za-z0-9]{18}$/;
                 if (!curpRegex.test(searchValue)) {
-                    alert("⚠️ Formato incorrecto: La CURP debe tener EXACTAMENTE 18 caracteres (letras y números sin espacios).");
+                    alert("⚠️ Formato incorrecto: La CURP debe tener EXACTAMENTE 18 caracteres (letras y números, sin espacios).");
                     return;
                 }
             }
 
             // 3. Validación estricta para ID (Mínimo 5 NÚMEROS)
             if (searchType === "id") {
-                // Expresión regular: Mínimo 5 caracteres y TODOS deben ser dígitos (\d)
                 const idRegex = /^\d{5,}$/;
                 if (!idRegex.test(searchValue)) {
-                    alert("⚠️ Formato incorrecto: El ID debe contener un MÍNIMO DE 5 NÚMEROS.");
+                    alert("⚠️ Formato incorrecto: El ID debe contener un MÍNIMO DE 5 NÚMEROS (no letras ni guiones).");
                     return;
                 }
             }
-            
+
             // ==========================================
             // FIN DE VALIDACIONES
             // ==========================================
@@ -343,7 +184,6 @@
                     data.results.forEach(res => {
                         bodyHtml += '<tr class="hover:bg-slate-700/40 transition-colors">';
                         
-                        // Asignar colores a las etiquetas para diferenciarlas visualmente
                         let badgeClass = "bg-slate-700 text-slate-300";
                         if (res.source === "JEF") badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
                         else if (res.source === "EMS") badgeClass = "bg-blue-500/20 text-blue-300 border border-blue-500/30";
@@ -368,8 +208,10 @@
 
             } catch (error) {
                 loading.classList.add('hidden');
-                alert("Ocurrió un error al conectar con el servidor de Google Sheets. Asegúrate de haber pegado la URL correcta del script.");
+                alert("Ocurrió un error al conectar con el servidor. Asegúrate de haber pegado la URL correcta del script.");
                 console.error(error);
             }
         });
     </script>
+</body>
+</html>
