@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta Estados</title>
-    <!-- Tailwind CSS para diseño moderno -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
@@ -19,6 +19,10 @@
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">Búsqueda rápida y jerárquica de registros</p>
             </div>
+            <!-- Contador visible de búsquedas -->
+            <div class="bg-slate-800/80 border border-slate-700 px-4 py-2 rounded-xl text-xs text-slate-300">
+                Búsquedas realizadas: <span id="searchCounterBadge" class="font-bold text-emerald-400">0 / 5</span>
+            </div>
         </div>
     </header>
 
@@ -31,8 +35,14 @@
                 <span class="w-2.5 h-2.5 rounded-full bg-[#1e5b4f]"></span> Filtros de Búsqueda
             </h2>
             
-            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
+            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
                 
+                <!-- Usuario -->
+                <div class="flex flex-col gap-2">
+                    <label for="usuario" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Usuario *</label>
+                    <input type="text" id="usuario" placeholder="Ej. JuanPerez" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none text-sm">
+                </div>
+
                 <!-- 1. Criterio Principal -->
                 <div class="flex flex-col gap-2">
                     <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Criterio Principal *</label>
@@ -41,19 +51,19 @@
                             <option value="curp">CURP</option>
                             <option value="id">ID</option>
                         </select>
-                        <input type="text" id="searchValue" placeholder="Valor (Obligatorio)..." class="w-full px-3 py-2.5 bg-transparent text-white placeholder-slate-500 focus:outline-none uppercase text-sm">
+                        <input type="text" id="searchValue" placeholder="Valor..." class="w-full px-3 py-2.5 bg-transparent text-white placeholder-slate-500 focus:outline-none uppercase text-sm">
                     </div>
                 </div>
 
                 <!-- 2. Estado -->
                 <div class="flex flex-col gap-2">
-                    <label for="estado" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Estado <span class="text-emerald-500/80 lowercase tracking-normal">(Acelera la búsqueda)</span></label>
+                    <label for="estado" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Estado</label>
                     <input type="text" id="estado" placeholder="Ej. 13" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none uppercase text-sm">
                 </div>
 
                 <!-- 3. CCT -->
                 <div class="flex flex-col gap-2">
-                    <label for="cct" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">CCT <span class="text-emerald-500/80 lowercase tracking-normal">(Acelera la búsqueda)</span></label>
+                    <label for="cct" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">CCT</label>
                     <input type="text" id="cct" placeholder="Ej. 13DPR..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none uppercase text-sm">
                 </div>
 
@@ -70,7 +80,7 @@
                 </div>
 
                 <!-- Botón de Envío -->
-                <div class="lg:col-span-4 flex justify-end pt-2 mt-2 border-t border-slate-700/60">
+                <div class="lg:col-span-5 flex justify-end pt-2 mt-2 border-t border-slate-700/60">
                     <button type="submit" class="bg-[#1e5b4f] hover:bg-[#16483e] text-white font-medium px-8 py-3 rounded-xl shadow-lg shadow-[#1e5b4f]/30 transition-all duration-200 flex items-center gap-2 text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <span>Ejecutar Búsqueda Rápida</span>
@@ -94,64 +104,152 @@
             
             <div class="overflow-x-auto max-h-[650px] border border-slate-700 rounded-xl">
                 <table id="resultsTable" class="w-full text-left border-collapse">
-                    <thead id="tableHeader" class="bg-slate-900/90 sticky top-0 text-xs text-slate-400 uppercase font-semibold tracking-wider backdrop-blur-sm">
-                        <!-- Generado dinámicamente -->
-                    </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-700/60 text-sm text-slate-300">
-                        <!-- Generado dinámicamente -->
-                    </tbody>
+                    <thead id="tableHeader" class="bg-slate-900/90 sticky top-0 text-xs text-slate-400 uppercase font-semibold tracking-wider backdrop-blur-sm"></thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-700/60 text-sm text-slate-300"></tbody>
                 </table>
             </div>
         </section>
 
     </main>
 
+    <!-- ========================================== -->
+    <!-- MODAL DE LOGIN REQUERIDO (CADA 5 BÚSQUEDAS) -->
+    <!-- ========================================== -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+            <h3 class="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Verificación de Seguridad
+            </h3>
+            <p class="text-slate-400 text-xs mb-6">Has alcanzado el límite de 5 búsquedas. Ingresa tu contraseña de administrador para continuar.</p>
+
+            <form id="loginForm" class="flex flex-col gap-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 uppercase">Usuario</label>
+                    <input type="text" id="modalUsuario" readonly class="w-full mt-1 px-4 py-2.5 bg-slate-900/50 border border-slate-700 rounded-xl text-slate-400 font-semibold text-sm cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 uppercase">Contraseña *</label>
+                    <input type="password" id="modalPassword" placeholder="••••••••" required class="w-full mt-1 px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none text-sm">
+                </div>
+
+                <div id="loginError" class="text-red-400 text-xs hidden bg-red-500/10 border border-red-500/20 p-3 rounded-lg"></div>
+
+                <button type="submit" id="btnLoginSubmit" class="mt-2 w-full bg-[#1e5b4f] hover:bg-[#16483e] text-white font-medium py-3 rounded-xl shadow-lg transition-all text-sm flex justify-center items-center gap-2">
+                    <span>Validar y Continuar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Script de Conexión -->
     <script>
-        // 👉 AQUÍ VA EL ENLACE DE TU SCRIPT DE GOOGLE
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwGYw-32ZTUXJKo1sjVc7Htj3-yT1UF5dd2q-s4zMmlYysHO9-Y7yqTcZhfr-DG0Iwn/exec"; 
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKMAuS39jlgZrrZB3re1p-NZ-4_YOg5N7jB39LLkzo7CpgdfzFBlNQYouwzuEYeYsDHA/exec"; // 👈 Tu URL de Apps Script
 
+        let searchCount = 0;
+        let lastUser = "";
+
+        // Actualiza el indicador visual del contador
+        function updateCounterBadge() {
+            document.getElementById('searchCounterBadge').textContent = `${searchCount} / 5`;
+        }
+
+        // Manejador del envío del formulario principal
         document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Obtenemos los valores y eliminamos espacios en blanco al inicio o al final (muy importante para búsquedas exactas)
+            const usuario = document.getElementById('usuario').value.trim();
+            const searchType = document.getElementById('searchType').value;
+            const searchValue = document.getElementById('searchValue').value.trim();
+
+            if (!usuario) {
+                alert("⚠️ Debes ingresar un nombre de Usuario.");
+                return;
+            }
+
+            if (!searchValue) {
+                alert("⚠️ Es obligatorio ingresar una CURP o un ID.");
+                return;
+            }
+
+            // Validaciones de formato
+            if (searchType === "curp" && !/^[A-Za-z0-9]{18}$/.test(searchValue)) {
+                alert("⚠️ La CURP debe tener EXACTAMENTE 18 caracteres.");
+                return;
+            }
+            if (searchType === "id" && !/^\d{5,}$/.test(searchValue)) {
+                alert("⚠️ El ID debe contener al menos 5 NÚMEROS.");
+                return;
+            }
+
+            // Si cambió de usuario, reiniciamos el contador para el nuevo usuario
+            if (usuario.toLowerCase() !== lastUser.toLowerCase()) {
+                searchCount = 0;
+                lastUser = usuario;
+            }
+
+            // Si llegó a 5 búsquedas, solicitamos validación
+            if (searchCount >= 5) {
+                mostrarModalLogin(usuario);
+                return;
+            }
+
+            // Ejecutamos la búsqueda normal
+            await ejecutarBusqueda();
+        });
+
+        // Mostrar Modal de Validación
+        function mostrarModalLogin(user) {
+            document.getElementById('modalUsuario').value = user;
+            document.getElementById('modalPassword').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        // Evento de submit dentro del Modal de Login
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const user = document.getElementById('modalUsuario').value;
+            const pass = document.getElementById('modalPassword').value;
+            const btnSubmit = document.getElementById('btnLoginSubmit');
+            const errorDiv = document.getElementById('loginError');
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Verificando...";
+            errorDiv.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=validate_user&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`);
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    // Reiniciar contador de búsquedas y ocultar modal
+                    searchCount = 0;
+                    updateCounterBadge();
+                    document.getElementById('loginModal').classList.add('hidden');
+                    
+                    // Continuar con la búsqueda que estaba pendiente
+                    await ejecutarBusqueda();
+                } else {
+                    errorDiv.textContent = `❌ ${data.message}`;
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.textContent = "❌ Error de conexión al verificar usuario.";
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Validar y Continuar";
+            }
+        });
+
+        // Función principal de consulta a Apps Script
+        async function ejecutarBusqueda() {
             const searchType = document.getElementById('searchType').value;
             const searchValue = document.getElementById('searchValue').value.trim();
             const estado = document.getElementById('estado').value.trim();
             const cct = document.getElementById('cct').value.trim();
             const searchScope = document.getElementById('searchScope').value;
-
-            // ==========================================
-            // VALIDACIONES ESTRICTAS
-            // ==========================================
-
-            // 1. Obligatorio tener un valor en CURP o ID
-            if (!searchValue) {
-                alert("⚠️ Es obligatorio ingresar una CURP o un ID para realizar la búsqueda.");
-                return;
-            }
-
-            // 2. Validación estricta para CURP (Exactamente 18 caracteres, letras y números)
-            if (searchType === "curp") {
-                const curpRegex = /^[A-Za-z0-9]{18}$/;
-                if (!curpRegex.test(searchValue)) {
-                    alert("⚠️ Formato incorrecto: La CURP debe tener EXACTAMENTE 18 caracteres (letras y números, sin espacios).");
-                    return;
-                }
-            }
-
-            // 3. Validación estricta para ID (Mínimo 5 NÚMEROS)
-            if (searchType === "id") {
-                const idRegex = /^\d{5,}$/;
-                if (!idRegex.test(searchValue)) {
-                    alert("⚠️ Formato incorrecto: El ID debe contener un MÍNIMO DE 5 NÚMEROS (no letras ni guiones).");
-                    return;
-                }
-            }
-
-            // ==========================================
-            // FIN DE VALIDACIONES
-            // ==========================================
 
             const loading = document.getElementById('loading');
             const resultsSection = document.getElementById('resultsSection');
@@ -159,16 +257,13 @@
             const tableBody = document.getElementById('tableBody');
             const resultCount = document.getElementById('resultCount');
 
-            // Mostrar estado de carga
             loading.classList.remove('hidden');
             resultsSection.classList.add('hidden');
 
             try {
-                // Se mandan los parámetros a la URL (encodeURIComponent previene errores con caracteres especiales)
-                const response = await fetch(`${WEB_APP_URL}?type=${searchType}&value=${encodeURIComponent(searchValue)}&estado=${encodeURIComponent(estado)}&cct=${encodeURIComponent(cct)}&scope=${searchScope}`);
+                const response = await fetch(`${WEB_APP_URL}?action=search&type=${searchType}&value=${encodeURIComponent(searchValue)}&estado=${encodeURIComponent(estado)}&cct=${encodeURIComponent(cct)}&scope=${searchScope}`);
                 const data = await response.json();
 
-                // Ocultar carga y mostrar resultados
                 loading.classList.add('hidden');
                 resultsSection.classList.remove('hidden');
 
@@ -186,14 +281,13 @@
 
                     let bodyHtml = '';
                     data.results.forEach(res => {
-                        bodyHtml += '<tr class="hover:bg-slate-700/40 transition-colors">';
-                        
                         let badgeClass = "bg-slate-700 text-slate-300";
                         if (res.source === "JEF") badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
                         else if (res.source === "EMS") badgeClass = "bg-blue-500/20 text-blue-300 border border-blue-500/30";
                         else if (res.source === "GB") badgeClass = "bg-amber-500/20 text-amber-300 border border-amber-500/30";
                         else if (res.source === "BASICA") badgeClass = "bg-purple-500/20 text-purple-300 border border-purple-500/30";
 
+                        bodyHtml += '<tr class="hover:bg-slate-700/40 transition-colors">';
                         bodyHtml += `<td class="p-4 border-b border-slate-700/65"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${badgeClass}">${res.source}</span></td>`;
                         bodyHtml += `<td class="p-4 border-b border-slate-700/65 text-slate-400 text-xs">${res.sheetName}</td>`;
 
@@ -204,18 +298,25 @@
                     });
                     tableBody.innerHTML = bodyHtml;
 
+                    // Incrementar el contador de búsquedas exitosas
+                    searchCount++;
+                    updateCounterBadge();
+
                 } else {
                     resultCount.textContent = "0 resultados";
                     tableHeader.innerHTML = '';
-                    tableBody.innerHTML = '<tr><td colspan="15" class="p-8 text-center text-slate-500">No se encontraron registros que coincidan con los criterios especificados.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="15" class="p-8 text-center text-slate-500">No se encontraron registros.</td></tr>';
+                    
+                    searchCount++;
+                    updateCounterBadge();
                 }
 
             } catch (error) {
                 loading.classList.add('hidden');
-                alert("Ocurrió un error al conectar con el servidor. Asegúrate de haber pegado la URL correcta del script.");
+                alert("Ocurrió un error al conectar con el servidor.");
                 console.error(error);
             }
-        });
+        }
     </script>
 </body>
 </html>
