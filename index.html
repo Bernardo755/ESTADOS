@@ -19,7 +19,7 @@
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">Búsqueda rápida y jerárquica de registros</p>
             </div>
-            <!-- Contador visible de búsquedas -->
+            <!-- Contador persistente de búsquedas -->
             <div class="bg-slate-800/80 border border-slate-700 px-4 py-2 rounded-xl text-xs text-slate-300">
                 Búsquedas realizadas: <span id="searchCounterBadge" class="font-bold text-emerald-400">0 / 5</span>
             </div>
@@ -35,14 +35,8 @@
                 <span class="w-2.5 h-2.5 rounded-full bg-[#1e5b4f]"></span> Filtros de Búsqueda
             </h2>
             
-            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
                 
-                <!-- Usuario -->
-                <div class="flex flex-col gap-2">
-                    <label for="usuario" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Usuario *</label>
-                    <input type="text" id="usuario" placeholder="Ej. JuanPerez" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none text-sm">
-                </div>
-
                 <!-- 1. Criterio Principal -->
                 <div class="flex flex-col gap-2">
                     <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Criterio Principal *</label>
@@ -51,19 +45,19 @@
                             <option value="curp">CURP</option>
                             <option value="id">ID</option>
                         </select>
-                        <input type="text" id="searchValue" placeholder="Valor..." class="w-full px-3 py-2.5 bg-transparent text-white placeholder-slate-500 focus:outline-none uppercase text-sm">
+                        <input type="text" id="searchValue" placeholder="Valor (Obligatorio)..." class="w-full px-3 py-2.5 bg-transparent text-white placeholder-slate-500 focus:outline-none uppercase text-sm">
                     </div>
                 </div>
 
                 <!-- 2. Estado -->
                 <div class="flex flex-col gap-2">
-                    <label for="estado" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Estado</label>
+                    <label for="estado" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Estado <span class="text-emerald-500/80 lowercase tracking-normal">(Acelera búsqueda)</span></label>
                     <input type="text" id="estado" placeholder="Ej. 13" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none uppercase text-sm">
                 </div>
 
                 <!-- 3. CCT -->
                 <div class="flex flex-col gap-2">
-                    <label for="cct" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">CCT</label>
+                    <label for="cct" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">CCT <span class="text-emerald-500/80 lowercase tracking-normal">(Acelera búsqueda)</span></label>
                     <input type="text" id="cct" placeholder="Ej. 13DPR..." class="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none uppercase text-sm">
                 </div>
 
@@ -80,7 +74,7 @@
                 </div>
 
                 <!-- Botón de Envío -->
-                <div class="lg:col-span-5 flex justify-end pt-2 mt-2 border-t border-slate-700/60">
+                <div class="lg:col-span-4 flex justify-end pt-2 mt-2 border-t border-slate-700/60">
                     <button type="submit" class="bg-[#1e5b4f] hover:bg-[#16483e] text-white font-medium px-8 py-3 rounded-xl shadow-lg shadow-[#1e5b4f]/30 transition-all duration-200 flex items-center gap-2 text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <span>Ejecutar Búsqueda Rápida</span>
@@ -121,12 +115,12 @@
                 <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                 Verificación de Seguridad
             </h3>
-            <p class="text-slate-400 text-xs mb-6">Has alcanzado el límite de 5 búsquedas. Ingresa tu contraseña de administrador para continuar.</p>
+            <p class="text-slate-400 text-xs mb-6">Has alcanzado el límite de 5 búsquedas. Ingresa tus credenciales de administrador para continuar.</p>
 
             <form id="loginForm" class="flex flex-col gap-4">
                 <div>
-                    <label class="text-xs font-semibold text-slate-300 uppercase">Usuario</label>
-                    <input type="text" id="modalUsuario" readonly class="w-full mt-1 px-4 py-2.5 bg-slate-900/50 border border-slate-700 rounded-xl text-slate-400 font-semibold text-sm cursor-not-allowed">
+                    <label class="text-xs font-semibold text-slate-300 uppercase">Usuario *</label>
+                    <input type="text" id="modalUsuario" placeholder="Ingresa tu usuario..." required class="w-full mt-1 px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-xl text-white focus:ring-2 focus:ring-[#1e5b4f] focus:outline-none text-sm">
                 </div>
                 <div>
                     <label class="text-xs font-semibold text-slate-300 uppercase">Contraseña *</label>
@@ -146,33 +140,31 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKMAuS39jlgZrrZB3re1p-NZ-4_YOg5N7jB39LLkzo7CpgdfzFBlNQYouwzuEYeYsDHA/exec"; // 👈 Tu URL de Apps Script
 
-        let searchCount = 0;
-        let lastUser = "";
+        // Cargar el contador desde localStorage para mantenerlo aunque se reinicie la página
+        let searchCount = parseInt(localStorage.getItem('searchCount')) || 0;
 
-        // Actualiza el indicador visual del contador
+        // Actualizar el indicador visual y guardar en almacenamiento local
         function updateCounterBadge() {
             document.getElementById('searchCounterBadge').textContent = `${searchCount} / 5`;
+            localStorage.setItem('searchCount', searchCount);
         }
+
+        // Inicializar el badge al cargar la página
+        updateCounterBadge();
 
         // Manejador del envío del formulario principal
         document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const usuario = document.getElementById('usuario').value.trim();
             const searchType = document.getElementById('searchType').value;
             const searchValue = document.getElementById('searchValue').value.trim();
-
-            if (!usuario) {
-                alert("⚠️ Debes ingresar un nombre de Usuario.");
-                return;
-            }
 
             if (!searchValue) {
                 alert("⚠️ Es obligatorio ingresar una CURP o un ID.");
                 return;
             }
 
-            // Validaciones de formato
+            // Validaciones estrictas
             if (searchType === "curp" && !/^[A-Za-z0-9]{18}$/.test(searchValue)) {
                 alert("⚠️ La CURP debe tener EXACTAMENTE 18 caracteres.");
                 return;
@@ -182,35 +174,29 @@
                 return;
             }
 
-            // Si cambió de usuario, reiniciamos el contador para el nuevo usuario
-            if (usuario.toLowerCase() !== lastUser.toLowerCase()) {
-                searchCount = 0;
-                lastUser = usuario;
-            }
-
-            // Si llegó a 5 búsquedas, solicitamos validación
+            // Si ya alcanzó o superó las 5 búsquedas, forzar la ventana de login
             if (searchCount >= 5) {
-                mostrarModalLogin(usuario);
+                mostrarModalLogin();
                 return;
             }
 
-            // Ejecutamos la búsqueda normal
+            // Si aún le quedan búsquedas permitidas, ejecutar directamente
             await ejecutarBusqueda();
         });
 
-        // Mostrar Modal de Validación
-        function mostrarModalLogin(user) {
-            document.getElementById('modalUsuario').value = user;
+        // Mostrar Modal de Login
+        function mostrarModalLogin() {
+            document.getElementById('modalUsuario').value = '';
             document.getElementById('modalPassword').value = '';
             document.getElementById('loginError').classList.add('hidden');
             document.getElementById('loginModal').classList.remove('hidden');
         }
 
-        // Evento de submit dentro del Modal de Login
+        // Validar credenciales contra Google Apps Script
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const user = document.getElementById('modalUsuario').value;
-            const pass = document.getElementById('modalPassword').value;
+            const user = document.getElementById('modalUsuario').value.trim();
+            const pass = document.getElementById('modalPassword').value.trim();
             const btnSubmit = document.getElementById('btnLoginSubmit');
             const errorDiv = document.getElementById('loginError');
 
@@ -223,19 +209,20 @@
                 const data = await response.json();
 
                 if (data.status === "success") {
-                    // Reiniciar contador de búsquedas y ocultar modal
+                    // Reiniciar contador de búsquedas y actualizar almacenamiento local
                     searchCount = 0;
                     updateCounterBadge();
+                    
                     document.getElementById('loginModal').classList.add('hidden');
                     
-                    // Continuar con la búsqueda que estaba pendiente
+                    // Ejecutar la búsqueda que estaba bloqueada
                     await ejecutarBusqueda();
                 } else {
                     errorDiv.textContent = `❌ ${data.message}`;
                     errorDiv.classList.remove('hidden');
                 }
             } catch (err) {
-                errorDiv.textContent = "❌ Error de conexión al verificar usuario.";
+                errorDiv.textContent = "❌ Error al conectar con el servidor para verificar las credenciales.";
                 errorDiv.classList.remove('hidden');
             } finally {
                 btnSubmit.disabled = false;
@@ -298,7 +285,7 @@
                     });
                     tableBody.innerHTML = bodyHtml;
 
-                    // Incrementar el contador de búsquedas exitosas
+                    // Incrementar y guardar el contador
                     searchCount++;
                     updateCounterBadge();
 
@@ -307,6 +294,7 @@
                     tableHeader.innerHTML = '';
                     tableBody.innerHTML = '<tr><td colspan="15" class="p-8 text-center text-slate-500">No se encontraron registros.</td></tr>';
                     
+                    // Incrementar y guardar el contador aunque la consulta no devuelva filas
                     searchCount++;
                     updateCounterBadge();
                 }
