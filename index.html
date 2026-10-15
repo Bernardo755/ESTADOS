@@ -138,171 +138,134 @@
 
     <!-- Script de Conexión -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKMAuS39jlgZrrZB3re1p-NZ-4_YOg5N7jB39LLkzo7CpgdfzFBlNQYouwzuEYeYsDHA/exec"; // 👈 Tu URL de Apps Script
+        // Pega aquí la URL COMPLETA del despliegue de Apps Script terminado en /exec.
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbylgCc1BCL4F6u9pMWwhlg4E9a4fJDLLV1x3qzMnNJ1I8Gc4qol28ptCkOtq_7YEu9YzA/exec";
+        let sessionToken = "";
+        let searchCount = 0;
+        let pendingSearch = false;
+        let dailyRemaining = 30;
+        const $ = id => document.getElementById(id);
 
-        // Cargar el contador desde localStorage para mantenerlo aunque se reinicie la página
-        let searchCount = parseInt(localStorage.getItem('searchCount')) || 0;
-
-        // Actualizar el indicador visual y guardar en almacenamiento local
         function updateCounterBadge() {
-            document.getElementById('searchCounterBadge').textContent = `${searchCount} / 5`;
-            localStorage.setItem('searchCount', searchCount);
+            $('searchCounterBadge').textContent = `${searchCount} / 5 · ${dailyRemaining} registros hoy`;
+        }
+        function mostrarModalLogin(mensaje) {
+            $('modalUsuario').value = '';
+            $('modalPassword').value = '';
+            $('loginError').textContent = mensaje || 'Ingresa tus credenciales para iniciar o renovar la sesión.';
+            $('loginError').classList.remove('hidden');
+            $('loginModal').classList.remove('hidden');
+            setTimeout(() => $('modalUsuario').focus(), 50);
+        }
+        function escaparHTML(valor) {
+            return String(valor ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+        function urlAccion(params) {
+            const u = new URL(WEB_APP_URL);
+            Object.entries(params).forEach(([k,v]) => u.searchParams.set(k, v == null ? '' : String(v)));
+            return u.toString();
+        }
+        async function pedirJSON(params) {
+            const response = await fetch(urlAccion(params), {method:'GET', cache:'no-store'});
+            return await response.json();
         }
 
-        // Inicializar el badge al cargar la página
-        updateCounterBadge();
-
-        // Manejador del envío del formulario principal
-        document.getElementById('searchForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const searchType = document.getElementById('searchType').value;
-            const searchValue = document.getElementById('searchValue').value.trim();
-
-            if (!searchValue) {
-                alert("⚠️ Es obligatorio ingresar una CURP o un ID.");
-                return;
-            }
-
-            // Validaciones estrictas
-            if (searchType === "curp" && !/^[A-Za-z0-9]{18}$/.test(searchValue)) {
-                alert("⚠️ La CURP debe tener EXACTAMENTE 18 caracteres.");
-                return;
-            }
-            if (searchType === "id" && !/^\d{5,}$/.test(searchValue)) {
-                alert("⚠️ El ID debe contener al menos 5 NÚMEROS.");
-                return;
-            }
-
-            // Si ya alcanzó o superó las 5 búsquedas, forzar la ventana de login
-            if (searchCount >= 5) {
-                mostrarModalLogin();
-                return;
-            }
-
-            // Si aún le quedan búsquedas permitidas, ejecutar directamente
-            await ejecutarBusqueda();
+        // ESTADOS siempre solicita autenticación al abrir; el token solo vive en memoria.
+        window.addEventListener('DOMContentLoaded', () => {
+            updateCounterBadge();
+            $('searchForm').addEventListener('submit', async e => {
+                e.preventDefault();
+                const type = $('searchType').value;
+                const value = $('searchValue').value.trim();
+                if (!value) return alert('⚠️ Es obligatorio ingresar una CURP o un ID.');
+                if (type === 'curp' && !/^[A-Za-z0-9]{18}$/.test(value)) return alert('⚠️ La CURP debe tener EXACTAMENTE 18 caracteres.');
+                if (type === 'id' && !/^\d{5,}$/.test(value)) return alert('⚠️ El ID debe contener al menos 5 NÚMEROS.');
+                if (!sessionToken) { pendingSearch = true; mostrarModalLogin('Para consultar, primero debes autenticarte.'); return; }
+                if (dailyRemaining <= 0) return alert('Has agotado los 30 registros diarios. Podrás consultar nuevamente mañana.');
+                await ejecutarBusqueda();
+            });
+            $('loginForm').addEventListener('submit', autenticar);
+            mostrarModalLogin('Para abrir ESTADOS, ingresa tu usuario y contraseña.');
         });
 
-        // Mostrar Modal de Login
-        function mostrarModalLogin() {
-            document.getElementById('modalUsuario').value = '';
-            document.getElementById('modalPassword').value = '';
-            document.getElementById('loginError').classList.add('hidden');
-            document.getElementById('loginModal').classList.remove('hidden');
-        }
-
-        // Validar credenciales contra Google Apps Script
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        async function autenticar(e) {
             e.preventDefault();
-            const user = document.getElementById('modalUsuario').value.trim();
-            const pass = document.getElementById('modalPassword').value.trim();
-            const btnSubmit = document.getElementById('btnLoginSubmit');
-            const errorDiv = document.getElementById('loginError');
-
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = "Verificando...";
-            errorDiv.classList.add('hidden');
-
+            if (WEB_APP_URL.includes('PEGA_AQUI')) { alert('Configura WEB_APP_URL con la URL completa de tu Apps Script.'); return; }
+            const btn = $('btnLoginSubmit');
+            const error = $('loginError');
+            btn.disabled = true; btn.textContent = 'Verificando...'; error.classList.add('hidden');
             try {
-                const response = await fetch(`${WEB_APP_URL}?action=validate_user&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`);
-                const data = await response.json();
-
-                if (data.status === "success") {
-                    // Reiniciar contador de búsquedas y actualizar almacenamiento local
-                    searchCount = 0;
-                    updateCounterBadge();
-                    
-                    document.getElementById('loginModal').classList.add('hidden');
-                    
-                    // Ejecutar la búsqueda que estaba bloqueada
-                    await ejecutarBusqueda();
-                } else {
-                    errorDiv.textContent = `❌ ${data.message}`;
-                    errorDiv.classList.remove('hidden');
+                const data = await pedirJSON({action:'validate_user', user:$('modalUsuario').value.trim(), pass:$('modalPassword').value});
+                if (data.status !== 'success' || !data.token) {
+                    error.textContent = '❌ ' + (data.message || 'No se pudo autenticar.'); error.classList.remove('hidden'); return;
                 }
+                sessionToken = data.token;
+                searchCount = 0;
+                dailyRemaining = Number(data.dailyRemaining ?? 30);
+                updateCounterBadge();
+                $('loginModal').classList.add('hidden');
+                if (dailyRemaining <= 0) alert('Autenticación correcta, pero ya agotaste el cupo diario de 30 registros.');
+                else if (pendingSearch) { pendingSearch = false; await ejecutarBusqueda(); }
             } catch (err) {
-                errorDiv.textContent = "❌ Error al conectar con el servidor para verificar las credenciales.";
-                errorDiv.classList.remove('hidden');
-            } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = "Validar y Continuar";
-            }
-        });
+                error.textContent = '❌ Error al conectar con el servidor para verificar las credenciales.'; error.classList.remove('hidden');
+            } finally { btn.disabled = false; btn.textContent = 'Validar y Continuar'; }
+        }
 
-        // Función principal de consulta a Apps Script
         async function ejecutarBusqueda() {
-            const searchType = document.getElementById('searchType').value;
-            const searchValue = document.getElementById('searchValue').value.trim();
-            const estado = document.getElementById('estado').value.trim();
-            const cct = document.getElementById('cct').value.trim();
-            const searchScope = document.getElementById('searchScope').value;
-
-            const loading = document.getElementById('loading');
-            const resultsSection = document.getElementById('resultsSection');
-            const tableHeader = document.getElementById('tableHeader');
-            const tableBody = document.getElementById('tableBody');
-            const resultCount = document.getElementById('resultCount');
-
-            loading.classList.remove('hidden');
-            resultsSection.classList.add('hidden');
-
+            if (!sessionToken) { pendingSearch = true; mostrarModalLogin(); return; }
+            const loading = $('loading');
+            const resultsSection = $('resultsSection');
+            loading.classList.remove('hidden'); resultsSection.classList.add('hidden');
             try {
-                const response = await fetch(`${WEB_APP_URL}?action=search&type=${searchType}&value=${encodeURIComponent(searchValue)}&estado=${encodeURIComponent(estado)}&cct=${encodeURIComponent(cct)}&scope=${searchScope}`);
-                const data = await response.json();
-
+                const data = await pedirJSON({
+                    action:'search', token:sessionToken,
+                    type:$('searchType').value, value:$('searchValue').value.trim(),
+                    estado:$('estado').value.trim(), cct:$('cct').value.trim(), scope:$('searchScope').value
+                });
                 loading.classList.add('hidden');
-                resultsSection.classList.remove('hidden');
-
-                if (data.status === "success" && data.results.length > 0) {
-                    resultCount.textContent = `${data.results.length} resultado(s)`;
-                    
-                    const firstResult = data.results[0];
-                    let headerHtml = '<tr><th class="p-4 border-b border-slate-700 text-emerald-400 font-bold bg-slate-900/90">Origen</th><th class="p-4 border-b border-slate-700 text-emerald-400 font-bold bg-slate-900/90">Hoja</th>';
-                    
-                    firstResult.headers.forEach(h => {
-                        headerHtml += `<th class="p-4 border-b border-slate-700 bg-slate-900/90">${h || 'Columna'}</th>`;
-                    });
-                    headerHtml += '</tr>';
-                    tableHeader.innerHTML = headerHtml;
-
-                    let bodyHtml = '';
-                    data.results.forEach(res => {
-                        let badgeClass = "bg-slate-700 text-slate-300";
-                        if (res.source === "JEF") badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
-                        else if (res.source === "EMS") badgeClass = "bg-blue-500/20 text-blue-300 border border-blue-500/30";
-                        else if (res.source === "GB") badgeClass = "bg-amber-500/20 text-amber-300 border border-amber-500/30";
-                        else if (res.source === "BASICA") badgeClass = "bg-purple-500/20 text-purple-300 border border-purple-500/30";
-
-                        bodyHtml += '<tr class="hover:bg-slate-700/40 transition-colors">';
-                        bodyHtml += `<td class="p-4 border-b border-slate-700/65"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${badgeClass}">${res.source}</span></td>`;
-                        bodyHtml += `<td class="p-4 border-b border-slate-700/65 text-slate-400 text-xs">${res.sheetName}</td>`;
-
-                        res.values.forEach(cell => {
-                            bodyHtml += `<td class="p-4 border-b border-slate-700/65 whitespace-nowrap">${cell !== null && cell !== undefined ? cell : ''}</td>`;
-                        });
-                        bodyHtml += '</tr>';
-                    });
-                    tableBody.innerHTML = bodyHtml;
-
-                    // Incrementar y guardar el contador
-                    searchCount++;
-                    updateCounterBadge();
-
-                } else {
-                    resultCount.textContent = "0 resultados";
-                    tableHeader.innerHTML = '';
-                    tableBody.innerHTML = '<tr><td colspan="15" class="p-8 text-center text-slate-500">No se encontraron registros.</td></tr>';
-                    
-                    // Incrementar y guardar el contador aunque la consulta no devuelva filas
-                    searchCount++;
-                    updateCounterBadge();
+                if (data.status === 'auth_required' || data.status === 'reauth_required') {
+                    sessionToken = ''; pendingSearch = true; mostrarModalLogin(data.message || 'Vuelve a autenticarte.'); return;
                 }
+                if (data.status === 'quota_exceeded') {
+                    dailyRemaining = 0; updateCounterBadge();
+                    alert(data.message || 'Cupo diario agotado.'); return;
+                }
+                if (data.status !== 'success') { alert(data.message || 'No fue posible realizar la búsqueda.'); return; }
 
-            } catch (error) {
+                searchCount = Number(data.searches || searchCount + 1);
+                dailyRemaining = Number(data.dailyRemaining ?? dailyRemaining);
+                updateCounterBadge();
+                const results = Array.isArray(data.results) ? data.results : [];
+                resultsSection.classList.remove('hidden');
+                $('resultCount').textContent = `${results.length} resultado(s) · quedan ${dailyRemaining} hoy`;
+                if (results.length) {
+                    const first = results[0];
+                    let head = '<tr><th class="p-4 border-b border-slate-700 text-emerald-400 font-bold bg-slate-900/90">Origen</th><th class="p-4 border-b border-slate-700 text-emerald-400 font-bold bg-slate-900/90">Hoja</th>';
+                    first.headers.forEach(h => head += `<th class="p-4 border-b border-slate-700 bg-slate-900/90">${escaparHTML(h || 'Columna')}</th>`);
+                    $('tableHeader').innerHTML = head + '</tr>';
+                    let body = '';
+                    results.forEach(res => {
+                        let cls = 'bg-slate-700 text-slate-300';
+                        if (res.source === 'JEF') cls = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                        else if (res.source === 'EMS') cls = 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
+                        else if (res.source === 'GB') cls = 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                        else if (res.source === 'BASICA') cls = 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
+                        body += `<tr class="hover:bg-slate-700/40 transition-colors"><td class="p-4 border-b border-slate-700/65"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${cls}">${escaparHTML(res.source)}</span></td><td class="p-4 border-b border-slate-700/65 text-slate-400 text-xs">${escaparHTML(res.sheetName)}</td>`;
+                        (res.values || []).forEach(cell => body += `<td class="p-4 border-b border-slate-700/65 whitespace-nowrap">${escaparHTML(cell)}</td>`);
+                        body += '</tr>';
+                    });
+                    $('tableBody').innerHTML = body;
+                } else {
+                    $('tableHeader').innerHTML = '';
+                    $('tableBody').innerHTML = '<tr><td colspan="15" class="p-8 text-center text-slate-500">No se encontraron registros.</td></tr>';
+                }
+                if (data.moreThan30) alert(data.message);
+                if (data.quotaExceeded || dailyRemaining <= 0) alert('Cupo diario agotado. Podrás consultar nuevamente mañana.');
+                else if (data.reauthRequired) { sessionToken = ''; mostrarModalLogin('Has completado cinco búsquedas. Autentícate nuevamente para continuar.'); }
+            } catch (err) {
                 loading.classList.add('hidden');
-                alert("Ocurrió un error al conectar con el servidor.");
-                console.error(error);
+                alert('Ocurrió un error al conectar con el servidor.');
+                console.error(err);
             }
         }
     </script>
