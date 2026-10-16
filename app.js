@@ -64,7 +64,7 @@
       $("modalPassword").value = "";
       if (d.status === "day_closed" || d.status === "blocked") return cerrarDia(d.message);
       if (d.status !== "success" || !d.token) return mostrarLogin("❌ " + (d.message || "No se pudo autenticar."), true);
-      S.token = d.token; S.consultas = 0;
+      S.token = d.token; S.consultas = 0; S.loginAt = S.lastContact = Date.now();
       actualizarContadores({ sesionNo: d.sesionNo, maxSesiones: d.maxSesiones, maxConsultas: d.maxConsultas, registrosUsados: d.registrosUsados, maxRegistros: d.maxRegistros });
       $("loginModal").classList.add("hidden");
       $("main").classList.remove("hidden");
@@ -88,7 +88,7 @@
     if (S.cerrado) return;
     if (!S.token) { S.pending = true; return mostrarLogin(S.consultas >= S.maxConsultas ? "Completaste 5 consultas. Ingresa tu contraseña para continuar." : "Debes autenticarte para consultar.", false); }
     const loading = $("loading");
-    loading.classList.remove("hidden"); $("resultsSection").classList.add("hidden");
+    loading.classList.remove("hidden"); $("resultsSection").classList.add("hidden"); S.lastContact = Date.now();
     try {
       const d = await Api.search(S.token, filtros());
       loading.classList.add("hidden");
@@ -151,6 +151,16 @@
       buscar();
     });
     $("loginForm").addEventListener("submit", autenticar);
+    // Aviso de expiración en el navegador (el servidor es quien manda): 15 min sin consultar o 2 h de sesión
+    setInterval(() => {
+      if (!S.token) return;
+      const ahora = Date.now();
+      if (ahora - S.lastContact > 15 * 60 * 1000 || ahora - S.loginAt > 2 * 60 * 60 * 1000) {
+        const t = S.token; S.token = ""; S.pending = false;
+        Api.logout(t).catch(() => {});
+        mostrarLogin("Tu sesión expiró (15 min de inactividad o 2 h de duración). Ingresa de nuevo.", false);
+      }
+    }, 15000);
     $("btnLogout").addEventListener("click", async () => {
       const t = S.token; S.token = ""; S.pending = false;
       if (t) { try { await Api.logout(t); } catch (_) {} }
