@@ -62,7 +62,7 @@
     try {
       const d = await Api.login($("modalUsuario").value.trim(), $("modalPassword").value);
       $("modalPassword").value = "";
-      if (d.status === "day_closed") return cerrarDia(d.message);
+      if (d.status === "day_closed" || d.status === "blocked") return cerrarDia(d.message);
       if (d.status !== "success" || !d.token) return mostrarLogin("❌ " + (d.message || "No se pudo autenticar."), true);
       S.token = d.token; S.consultas = 0;
       actualizarContadores({ sesionNo: d.sesionNo, maxSesiones: d.maxSesiones, maxConsultas: d.maxConsultas, registrosUsados: d.registrosUsados, maxRegistros: d.maxRegistros });
@@ -84,7 +84,7 @@
     return "";
   }
 
-  async function buscar() {
+  async function buscarInterno() {
     if (S.cerrado) return;
     if (!S.token) { S.pending = true; return mostrarLogin(S.consultas >= S.maxConsultas ? "Completaste 5 consultas. Ingresa tu contraseña para continuar." : "Debes autenticarte para consultar.", false); }
     const loading = $("loading");
@@ -94,7 +94,7 @@
       loading.classList.add("hidden");
       if (d.status === "auth_required") { S.token = ""; S.pending = true; return mostrarLogin(d.message, true); }
       if (d.status === "reauth_required") { S.token = ""; S.pending = true; S.consultas = S.maxConsultas; return mostrarLogin(d.message, false); }
-      if (d.status === "day_closed") return cerrarDia(d.message);
+      if (d.status === "day_closed" || d.status === "blocked") return cerrarDia(d.message);
       if (d.status !== "success") return alert(d.message || "No fue posible realizar la búsqueda.");
 
       actualizarContadores(d);
@@ -105,6 +105,13 @@
       loading.classList.add("hidden");
       alert("Ocurrió un error al conectar con el servidor.");
     }
+  }
+
+  // Evita doble envío (un doble clic no debe parecer una ráfaga)
+  async function buscar() {
+    if (S.cargando) return;
+    S.cargando = true;
+    try { await buscarInterno(); } finally { S.cargando = false; }
   }
 
   function render(d) {
